@@ -1,7 +1,8 @@
 {
   "name": "rebound-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Laravel Echo Client library for beautiful Engine.io integration",
+  "license": "MIT",
   "main": "src/index.js",
   "scripts": {
     "webpack": "webpack",
