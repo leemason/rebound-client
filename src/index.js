@@ -10,7 +10,7 @@ import {PresenceChannel} from './presencechannel';
 
 export class Socket extends EventEmitter {
 
-    constructor(path){
+    constructor(path, csrf){
         super();
 
         this.socket = new engine(path);
@@ -21,6 +21,14 @@ export class Socket extends EventEmitter {
         this.socket.on('connect', function(){
             this.emit('connect', this);
         }.bind(this));
+
+        this.send({
+            event: 'socket:csrf',
+            data: {
+                token: csrf
+            },
+            channel: null
+        });
 
         //proxy close calls to event system
         this.socket.on('close', function(){

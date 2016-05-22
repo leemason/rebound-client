@@ -16,7 +16,7 @@ Docs and usage to come, but basically you can have normal channels, authenticate
 <script src="./rebound-client.min.js"></script>
 <script>
 (function(){
-    var socket = new rebound.Socket('http://domain.com:3000/');
+    var socket = new rebound.Socket('http://domain.com:3000/', '{{ csrf_token() }}');
 
     var publicChannel = socket.channel('channel-name');
 
