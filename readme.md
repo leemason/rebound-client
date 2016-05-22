@@ -2,6 +2,8 @@
 
 This is a Laravel Echo inspired websocket client.
 
+Works in conjunction with the Rebound Server: https://github.com/leemason/rebound-server.
+
 Originally planned to work with/over socket.io I found it too opinionated, so I took the underlying engine.io library and built a "channel orientated" client library.
 
 Because it uses engine.io as the base client you still benefit from all the fall backs, and reconnection functionality.
