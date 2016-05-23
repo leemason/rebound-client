@@ -36,9 +36,11 @@ export class Channel extends EventEmitter{
      * Connect if left.
      */
     connect(){
-        if(!this.connected()){
-            this.socket.send({event: 'subscribe', channel: this.channel});
-        }
+        this.socket.then(function(){
+            if(!this.connected()){
+                this.socket.send({event: 'subscribe', channel: this.channel});
+            }
+        }.bind(this));
     }
 
     /**

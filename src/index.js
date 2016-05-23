@@ -24,6 +24,8 @@ export class Socket extends EventEmitter {
 
         this.channels = {};
 
+        this._connected = false;
+
         //proxy connect calls to event system
         this.socket.on('connect', function(){
             this.emit('connect', this);
@@ -37,6 +39,12 @@ export class Socket extends EventEmitter {
             channel: null
         });
 
+        this.on('socket:csrf:saved', function(data){
+            //were ready to go
+            this._connected = true;
+            this.emit('connected', this);
+        }.bind(this));
+
         //proxy close calls to event system
         this.socket.on('close', function(){
             this.emit('close', this);
@@ -47,6 +55,26 @@ export class Socket extends EventEmitter {
             data = JSON.parse(data);
             this.emit(data.event, data, this);
         }.bind(this));
+    }
+
+    /**
+     * Return connected status
+     */
+    connected(){
+        return this._connected;
+    }
+
+    /**
+     * Register a callback to be called on successfully joining the channel.
+     */
+    then(cb){
+        //if connected run cb
+        if(this.connected()){
+            cb(this);
+        }else{
+            //else register callback on subscribed
+            this.on('connected', cb);
+        }
     }
 
     /**
