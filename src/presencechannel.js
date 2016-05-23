@@ -6,6 +6,9 @@ import {Members} from './members';
 
 export class PresenceChannel extends Channel{
 
+    /**
+     * Create a new class instance.
+     */
     constructor(channel, socket){
 
         super(channel, socket);
@@ -24,24 +27,30 @@ export class PresenceChannel extends Channel{
         }.bind(this));
     }
 
+    /**
+     * Listen for someone joining the channel.
+     */
     joining(callback){
         this.on('member_added', function(member, members, channel){
             callback(member, members, this);
         }.bind(this));
     }
 
+    /**
+     * Listen for someone leaving the channel.
+     */
     leaving(callback){
         this.on('member_removed', function(member, members, channel){
             callback(member, members, this);
         }.bind(this));
     }
 
+    /**
+     * Register a callback to be called anytime the member list changes.
+     */
     here(callback){
-        let cb = function(member, members, channel){
-            callback(member, members, channel);
-        }
-        this.joining(cb);
-        this.leaving(cb);
+        this.joining(callback);
+        this.leaving(callback);
     }
 }
 

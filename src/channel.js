@@ -4,18 +4,21 @@ import {EventEmitter} from 'events';
 
 export class Channel extends EventEmitter{
 
+    /**
+     * Create a new class instance.
+     */
     constructor(channel, socket){
 
         super();
 
-        this.connected = false;
+        this._connected = false;
 
         this.channel = channel;
         this.socket = socket;
 
         //register activation cb
         this.socket.on(channel + ':subscription_succeeded', function(data){
-            this.connected = true;
+            this._connected = true;
             this.emit('connected', this);
         }.bind(this));
 
@@ -24,19 +27,30 @@ export class Channel extends EventEmitter{
 
         //register left cb
         this.socket.on(channel + ':left', function(data){
-            this.connected = false;
+            this._connected = false;
             this.emit('disconnected', this);
         }.bind(this));
     }
 
+    /**
+     * Connect if left.
+     */
     connect(){
-        this.socket.send({event: 'subscribe', channel: this.channel});
+        if(!this.connected()){
+            this.socket.send({event: 'subscribe', channel: this.channel});
+        }
     }
 
+    /**
+     * Return connected status
+     */
     connected(){
-        return this.connected;
+        return this._connected;
     }
 
+    /**
+     * Register a callback to be called on successfully joining the channel.
+     */
     then(cb){
         //if connected run cb
         if(this.connected()){
@@ -47,7 +61,12 @@ export class Channel extends EventEmitter{
         }
     }
 
+    /**
+     * Listen for an event on the channel instance.
+     */
     listen(event, orcb){
+
+        event = this.socket.formatter.format(event);
 
         var cb = function(data){
             if(data.event == event && data.channel == this.channel){
@@ -58,6 +77,9 @@ export class Channel extends EventEmitter{
         this.socket.on(event, cb);
     }
 
+    /**
+     * Leave channel.
+     */
     leave(){
         //request leave
         this.socket.send({event: 'leave', channel: this.channel});

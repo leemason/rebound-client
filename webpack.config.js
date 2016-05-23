@@ -3,6 +3,7 @@ const webpack = require('webpack');
 module.exports = {
     target: 'web',
     entry: './src/index.js',
+    devtool: 'source-map',
     output: {
         library: 'rebound',
         path: './dist',
