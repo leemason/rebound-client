@@ -2,38 +2,46 @@
 
 import {Channel} from './channel';
 
+import {Members} from './members';
+
 export class PresenceChannel extends Channel{
 
     constructor(channel, socket){
 
         super(channel, socket);
 
-        this._members = {};
+        this.members = new Members({}, socket.socketId());
 
         //register members cb
         this.socket.on(channel + ':member_added', function(data){
-            this._members = data.members;
+            this.members = new Members(data.members, this.socket.socketId());
+            this.emit('member_added', data.member, this.members, this);
         }.bind(this));
 
         this.socket.on(channel + ':member_removed', function(data){
-            this._members = data.members;
+            this.members = new Members(data.members, this.socket.socketId());
+            this.emit('member_removed', data.member, this.members, this);
         }.bind(this));
     }
 
-    members(){
-        return this._members;
-    }
-
     joining(callback){
-        this.socket.on(this.channel + ':member_added', function(data){
-            callback(data.members, this);
+        this.on('member_added', function(member, members, channel){
+            callback(member, members, this);
         }.bind(this));
     }
 
     leaving(callback){
-        this.socket.on(this.channel + ':member_removed', function(data){
-            callback(data.members, this);
+        this.on('member_removed', function(member, members, channel){
+            callback(member, members, this);
         }.bind(this));
+    }
+
+    here(callback){
+        let cb = function(member, members, channel){
+            callback(member, members, channel);
+        }
+        this.joining(cb);
+        this.leaving(cb);
     }
 }
 

@@ -77,7 +77,7 @@ Presence channels must be authenticated just like private channels, but once you
 
 ## Events
 
-Events are fired on channels, you can listen for events in the global scope, you must be listening on a channel.
+Events are fired on channels, you can't listen for events in the global scope, you must be listening on a channel.
 
 Each event gets given 1 argument which contains the following properties:
 
@@ -144,7 +144,7 @@ function(res){
 
 
     // will trigger a post request to authenticate, as with private channel
-    // channel name gets prefixed with "private-"
+    // channel name gets prefixed with "presence-"
     var presenceChannel = socket.channel('channel-name');
 
     presenceChannel.then(function(channel){
@@ -158,7 +158,18 @@ function(res){
         });
 
         // get list of members
-        channel.members();
+        channel.members;
+
+        // get your info
+        channel.members.me;
+
+        // loop members
+        channel.members.each(function(member){
+
+        });
+
+        //get member by id
+        channel.members.get(id);
 
         // listen for new members
         channel.joining(function(members, channel){
@@ -171,6 +182,7 @@ function(res){
         });
 
     });
+
 
     //want to leave?
     presenceChannel.leave();

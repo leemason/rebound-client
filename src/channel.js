@@ -14,7 +14,7 @@ export class Channel extends EventEmitter{
         this.socket = socket;
 
         //register activation cb
-        this.socket.on(channel + ':subscribed', function(data){
+        this.socket.on(channel + ':subscription_succeeded', function(data){
             this.connected = true;
             this.emit('connected', this);
         }.bind(this));
