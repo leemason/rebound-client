@@ -18,7 +18,7 @@ If using any sort of bundler you can:
 
 ```javascript
 var Socket = require('rebound-client');
-var socket = new Socket('domain:port', csrf);
+var socket = new Socket('domain:port', opts);
 ```
 
 If you just want the compiled, minified script it can be found at ```dist/rebound-client.min.js```.
@@ -29,12 +29,32 @@ And you can access it in the global scope via ```rebound.Socket```.
 <script src="./rebound-client.min.js"></script>
 <script>
 (function(){
-    var socket = new rebound.Socket('domain:port', '{{ csrf_token() }}');
+    var socket = new rebound.Socket('domain:port', {csrf: '{{ csrf_token() }}'});
 })();
 ```
 
-You must provide the web socket domain and port its hosted on, and a csrf token.
-I guess this could be used outside of Laravel, but the core use case is Laravel, so pass in your csrf token as per the example.
+You must provide the web socket domain and port its hosted on, and an optional options object.
+I guess this could be used outside of Laravel, but the core use case is Laravel, so you can pass in your csrf token to the opts object as per the example.
+Or add a meta tag to your page and this will be referenced instead:
+
+```
+<meta name="csrf-token" content"{{ csrf_token() }}"/>
+```
+
+You can create a connection with either path, and options. Or just pass in an options object as the first parameter.
+
+```javascript
+var socket = new rebound.Socket('domain:port', {csrf: '{{ csrf_token() }}'});
+//or
+var socket = new rebound.Socket({
+    host: 'domain',
+    port: 3000,
+    //other opts, etc
+    csrf: '{{ csrf_token() }}'
+});
+```
+
+These parameters are passed directly to the underlying engine.io instance. Please see [their documentation](https://github.com/socketio/engine.io-client#methods) for possible options.
 
 Once you have a connected instance you can create/access channels.
 
@@ -95,7 +115,7 @@ function(res){
 <script src="./rebound-client.min.js"></script>
 <script>
 (function(){
-    var socket = new rebound.Socket('http://domain.com:3000/', '{{ csrf_token() }}');
+    var socket = new rebound.Socket('http://domain.com:3000/', {csrf: '{{ csrf_token() }}'});
 
     var publicChannel = socket.channel('channel-name');
 

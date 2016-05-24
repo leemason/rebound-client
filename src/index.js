@@ -15,10 +15,19 @@ export class Socket extends EventEmitter {
     /**
      * Create a new class instance.
      */
-    constructor(path, csrf){
+    constructor(path, opts){
         super();
 
-        this.socket = new engine(path);
+        if('object' == typeof path){
+            path.path = '/rebound';
+        }else{
+            opts = opts || {};
+            opts.path = '/rebound';
+        }
+
+        this.csrf = (opts.hasOwnProperty('csrf')) ? opts.csrf : this.csrfToken();
+
+        this.socket = new engine(path, opts);
 
         this.formatter = new EventFormatter('App.Events');
 
@@ -34,7 +43,7 @@ export class Socket extends EventEmitter {
         this.send({
             event: 'socket:csrf',
             data: {
-                token: csrf
+                token: this.csrf
             },
             channel: null
         });
@@ -55,6 +64,21 @@ export class Socket extends EventEmitter {
             data = JSON.parse(data);
             this.emit(data.event, data, this);
         }.bind(this));
+    }
+
+    /**
+     * Extract the CSRF token from the page.
+     */
+    csrfToken() {
+        var selector = document.querySelector(
+            'meta[name="csrf-token"]'
+        );
+
+        if ( ! selector) {
+            return null;
+        } else {
+            return selector.getAttribute('content');
+        }
     }
 
     /**
